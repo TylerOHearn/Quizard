@@ -3,14 +3,10 @@ package com.tylersapps.quizard
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 
 class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
@@ -30,6 +26,8 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
     private var mCorrectAnswers: Int = 0
     private var mUserName: String? = null
     private var mSelectedOptionPosition: Int = 0
+    private var mUserSelection: Boolean = false
+    private var mIfAnswerSubmit: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,18 +60,20 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun setQuestion() {
 
+        mIfAnswerSubmit = false
+
         val question: Question =
             mQuestionsList!![mCurrentPosition - 1] // Getting the question from the list with the help of current position.
         defaultOptionsView()
         if (mCurrentPosition == mQuestionsList!!.size) {
-            btnSubmit?.text = "FINISH"
+            btnSubmit?.text = getString(R.string.finish)
         } else {
-            btnSubmit?.text = "SUBMIT"
+            btnSubmit?.text = getString(R.string.submit)
         }
         progressBar?.progress =
             mCurrentPosition // Setting the current progress in the progressbar using the position of question
         tvProgress?.text =
-            "$mCurrentPosition" + "/" + progressBar?.max // Setting up the progress text
+            "$mCurrentPosition" + getString(R.string.out_of) + progressBar?.max // Setting up the progress text
 
         // Now set the current question and the options in the UI
         tvQuestion?.text = question.question
@@ -114,70 +114,88 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
         when (view?.id) {
 
             R.id.tv_option_one -> {
-                tvOptionOne?.let {
-                    selectedOptionView(it, 1)
+                if (!mIfAnswerSubmit) {
+                    tvOptionOne?.let {
+                        selectedOptionView(it, 1)
+                        mUserSelection = true
+                    }
                 }
             }
 
             R.id.tv_option_two -> {
-                tvOptionTwo?.let {
-                    selectedOptionView(it, 2)
+                if (!mIfAnswerSubmit) {
+                    tvOptionTwo?.let {
+                        selectedOptionView(it, 2)
+                        mUserSelection = true
+                    }
                 }
             }
 
             R.id.tv_option_three -> {
-                tvOptionThree?.let {
-                    selectedOptionView(it, 3)
+                if (!mIfAnswerSubmit) {
+                    tvOptionThree?.let {
+                        selectedOptionView(it, 3)
+                        mUserSelection = true
+                    }
                 }
             }
 
             R.id.tv_option_four -> {
-                tvOptionFour?.let {
-                    selectedOptionView(it, 4)
-
+                if (!mIfAnswerSubmit) {
+                    tvOptionFour?.let {
+                        selectedOptionView(it, 4)
+                        mUserSelection = true
+                    }
                 }
             }
 
-            R.id.btn_submit ->{
+            R.id.btn_submit -> {
+                if (!mUserSelection) {
+                    Toast.makeText(this, "Please select an answer to continue.", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    if (mSelectedOptionPosition == 0) {
 
-                if (mSelectedOptionPosition == 0){
+                        mCurrentPosition++
 
-                    mCurrentPosition++
+                        when {
+                            mCurrentPosition <= mQuestionsList!!.size -> {
 
-                    when{
-                        mCurrentPosition <= mQuestionsList!!.size ->{
+                                setQuestion()
+                                mUserSelection = false
+                            }
+                            else -> {
 
-                            setQuestion()
+                                val intent =
+                                    Intent(this@QuizQuestionsActivity, ResultActivity::class.java)
+                                intent.putExtra(Constants.USER_NAME, mUserName)
+                                intent.putExtra(Constants.CORRECT_ANSWERS, mCorrectAnswers)
+                                intent.putExtra(Constants.TOTAL_QUESTIONS, mQuestionsList?.size)
+                                startActivity(intent)
+                                finish()
+                            }
                         }
-                        else -> {
+                    } else {
+                        val question = mQuestionsList?.get(mCurrentPosition - 1)
 
-                            val intent =
-                                Intent(this@QuizQuestionsActivity, ResultActivity::class.java)
-                            intent.putExtra(Constants.USER_NAME, mUserName)
-                            intent.putExtra(Constants.CORRECT_ANSWERS, mCorrectAnswers)
-                            intent.putExtra(Constants.TOTAL_QUESTIONS, mQuestionsList?.size)
-                            startActivity(intent)
-                            finish()
+                        if (question!!.correctAnswer != mSelectedOptionPosition) {
+                            answerView(mSelectedOptionPosition,
+                                R.drawable.incorrect_option_border_bg)
+                        } else {
+                            mCorrectAnswers++
                         }
+
+                        answerView(question.correctAnswer, R.drawable.correct_option_border_bg)
+
+                        if (mCurrentPosition == mQuestionsList!!.size) {
+                            btnSubmit?.text = getString(R.string.finish)
+                        } else {
+                            btnSubmit?.text = getString(R.string.go_to_next_question)
+                            mIfAnswerSubmit = true
+                        }
+
+                        mSelectedOptionPosition = 0
                     }
-                }else {
-                    val question = mQuestionsList?.get(mCurrentPosition - 1)
-
-                    if (question!!.correctAnswer != mSelectedOptionPosition) {
-                        answerView(mSelectedOptionPosition, R.drawable.incorrect_option_border_bg)
-                    }else{
-                        mCorrectAnswers++
-                    }
-
-                    answerView(question.correctAnswer, R.drawable.correct_option_border_bg)
-
-                    if(mCurrentPosition == mQuestionsList!!.size){
-                        btnSubmit?.text = "FINISH"
-                    }else{
-                        btnSubmit?.text = "GO TO NEXT QUESTION"
-                    }
-
-                    mSelectedOptionPosition = 0
                 }
             }
         }

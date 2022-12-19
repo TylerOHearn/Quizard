@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Quizard</string>
+    <string name="finish">FINISH</string>
+    <string name="submit">SUBMIT</string>
+    <string name="out_of">/</string>
+    <string name="go_to_next_question">GO TO NEXT QUESTION</string>
+    <string name="result">Result</string>
+
+
+    <string name="cd_image">image</string>
+    <string name="hey_congratulations">Hey, Congratulations!</string>
 </resources>
