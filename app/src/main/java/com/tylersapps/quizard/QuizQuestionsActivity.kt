@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import timber.log.Timber
 
 class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -115,6 +116,8 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.tv_option_one -> {
                 if (!mIfAnswerSubmit) {
+                    Timber.i("User selected option 1")
+
                     tvOptionOne?.let {
                         selectedOptionView(it, 1)
                         mUserSelection = true
@@ -124,6 +127,8 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.tv_option_two -> {
                 if (!mIfAnswerSubmit) {
+                    Timber.i("User selected option 2")
+
                     tvOptionTwo?.let {
                         selectedOptionView(it, 2)
                         mUserSelection = true
@@ -133,6 +138,8 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.tv_option_three -> {
                 if (!mIfAnswerSubmit) {
+                    Timber.i("User selected option 3")
+
                     tvOptionThree?.let {
                         selectedOptionView(it, 3)
                         mUserSelection = true
@@ -142,6 +149,8 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.tv_option_four -> {
                 if (!mIfAnswerSubmit) {
+                    Timber.i("User selected option 4")
+
                     tvOptionFour?.let {
                         selectedOptionView(it, 4)
                         mUserSelection = true
@@ -179,9 +188,13 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
                         val question = mQuestionsList?.get(mCurrentPosition - 1)
 
                         if (question!!.correctAnswer != mSelectedOptionPosition) {
+                            Timber.i("User selected the wrong answer")
+
                             answerView(mSelectedOptionPosition,
                                 R.drawable.incorrect_option_border_bg)
                         } else {
+                            Timber.i("User selected the correct answer")
+
                             mCorrectAnswers++
                         }
 
