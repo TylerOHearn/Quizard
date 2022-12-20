@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.squareup.picasso.Picasso
 import timber.log.Timber
 
 class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
@@ -78,7 +79,7 @@ class QuizQuestionsActivity : AppCompatActivity(), View.OnClickListener {
 
         // Now set the current question and the options in the UI
         tvQuestion?.text = question.question
-        ivImage?.setImageResource(question.image)
+        Picasso.get().load(question.image).into(ivImage)
         tvOptionOne?.text = question.optionOne
         tvOptionTwo?.text = question.optionTwo
         tvOptionThree?.text = question.optionThree
